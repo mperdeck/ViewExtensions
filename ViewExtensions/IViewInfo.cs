@@ -12,6 +12,11 @@ namespace ViewExtensions
     public interface IViewInfo
     {
         /// <summary>
+        /// Key uniquely identifying this page.
+        /// </summary>
+        string Key { get; }
+
+        /// <summary>
         /// The absolute url of the page. Does not contain the scheme or domain. 
         /// For example: /abc/def
         /// </summary>
@@ -19,6 +24,8 @@ namespace ViewExtensions
 
         /// <summary>
         /// The absolute path on the file system of the .cshtml file for this page.
+        /// This is relative to the root of the site. For example,
+        /// /Views/Contact.cshtml
         /// </summary>
         string ViewPath { get; }
 
@@ -35,22 +42,25 @@ namespace ViewExtensions
         /// <summary>
         /// Sets the properties of this IPageInfo based on the input parameters.
         /// </summary>
-        /// <param name="viewPath">
+        /// <param name="viewFullPath">
         /// Absolute path on the file system of the .cshtml file.
+        /// </param>
+        /// <param name="viewFilesRootFullPath">
+        /// Absolute path on the file system of the Views directory.
         /// </param>
         /// <param name="viewContent">
         /// Content of the .cshtml file.
         /// </param>
-        void Load(string viewPath, string viewContent);
+        void Load(string viewFullPath, string viewFilesRootFullPath, string viewContent);
 
         /// <summary>
         /// Generates html with a link with the url and title of this page.
         /// </summary>
-        /// <param name="htmlAttributes">
-        /// Additional html attributes to add to the anchor tag. Works the same way
-        /// as the htmlAttributes parameter of MVC's LinkExtensions.ActionLink.
-        /// </param>
+        ///// <param name="htmlAttributes">
+        ///// Additional html attributes to add to the anchor tag. Works the same way
+        ///// as the htmlAttributes parameter of MVC's LinkExtensions.ActionLink.
+        ///// </param>
         /// <returns></returns>
-        string ViewLink(IDictionary<string, Object> htmlAttributes);
+        string ViewLink();
     }
 }

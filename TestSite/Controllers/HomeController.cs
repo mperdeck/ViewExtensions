@@ -14,12 +14,13 @@ namespace TestSite.Controllers
         public ActionResult Index(string pathInfo)
         {
            // string view = "~/Views/Home/Why.cshtml";
-            string view = pathInfo;
-            if ((view != null) && view.Contains("/"))
-            {
-                view = Path.Combine("~/Views/", view);
-            }
+            //string view = pathInfo;
+            //if ((view != null) && view.Contains("/"))
+            //{
+            //    view = Path.Combine("~/Views/", view);
+            //}
 
+            string view = Views.ByUrl(pathInfo).ViewPath;
             return View(view);
 
 

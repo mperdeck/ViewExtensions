@@ -44,7 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="LinkExtensions.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="ViewExtensionsException.cs" />
     <Compile Include="ViewInfo.cs" />
     <Compile Include="IViewInfo.cs" />
     <Compile Include="Views.cs" />

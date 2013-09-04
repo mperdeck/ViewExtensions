@@ -17,6 +17,7 @@ namespace TestSite
         protected void Application_Start()
         {
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            ViewExtensionsConfig.RegisterViews();
         }
     }
 }

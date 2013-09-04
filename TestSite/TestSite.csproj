@@ -176,6 +176,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\ViewExtensionsConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -195,10 +196,12 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Contact.cshtml" />
+    <Content Include="Views\Index.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -207,25 +210,28 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\JSNLog.js\JL\Index.cshtml" />
+    <Content Include="Views\JSNLogjs\JL\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\JSNLog.js\JL\setOptions.cshtml" />
+    <Content Include="Views\JSNLogjs\JL\setOptions.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\JSNLog.js\Logger\setOptions.cshtml" />
+    <Content Include="Views\JSNLogjs\Logger\setOptions.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\JSNLog.js\Logger\log.cshtml" />
+    <Content Include="Views\JSNLogjs\Logger\log.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Home\Why.cshtml" />
+    <Content Include="Views\Why.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ViewExtensions\ViewExtensions.csproj">
       <Project>{caa98f16-ae4c-49ab-a6e0-4c863e1521a5}</Project>
       <Name>ViewExtensions</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\JSNLogjs\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
