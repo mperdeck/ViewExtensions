@@ -53,6 +53,11 @@ namespace ViewExtensions
             return Utils.LinkHtml(Url, Title);
         }
 
+        public string ViewLink(string title)
+        {
+            return Utils.LinkHtml(Url, title);
+        }
+
         // Make sure that the item does not contain escaped characters or "",
         // because this method doesn't unescape anything.
         protected string ViewBagPageItem(string itemName, string viewContent)

@@ -62,5 +62,6 @@ namespace ViewExtensions
         ///// </param>
         /// <returns></returns>
         string ViewLink();
+        string ViewLink(string title);
     }
 }

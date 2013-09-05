@@ -16,6 +16,12 @@ namespace ViewExtensions
             return new MvcHtmlString(viewLink);
         }
 
+        public static MvcHtmlString ViewLink(this HtmlHelper htmlHelper, string viewKey, string title)
+        {
+            string viewLink = Views.ByKey(viewKey).ViewLink(title);
+            return new MvcHtmlString(viewLink);
+        }
+
         public static MvcHtmlString ViewMenu(this HtmlHelper htmlHelper)
         {
             string viewMenu = Views.ViewMenu();

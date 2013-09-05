@@ -47,7 +47,7 @@ namespace ViewExtensions
             _viewInfosByUrl = new Dictionary<string, IViewInfo>();
             _viewInfos = new List<IViewInfo>();
 
-            var viewFilePaths = Directory.EnumerateFiles(viewFilesRootFullPath, "*.cshtml", SearchOption.AllDirectories);
+            var viewFilePaths = Directory.EnumerateFiles(rootViewFullPath, "*.cshtml", SearchOption.AllDirectories);
 
             foreach (string viewFilePath in viewFilePaths)
             {
