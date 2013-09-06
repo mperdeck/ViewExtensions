@@ -127,7 +127,7 @@ namespace ViewExtensions
             {
                 string cssClass = string.Format("level{0}", NbrForwardSlashes(viewInfo.Url));
 
-                sb.AppendLine(Utils.LinkHtml(viewInfo.Url, viewInfo.Title, cssClass));
+                sb.AppendLine(viewInfo.ViewLink(null, cssClass));
             }
 
             return sb.ToString();

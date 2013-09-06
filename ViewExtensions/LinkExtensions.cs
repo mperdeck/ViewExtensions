@@ -10,15 +10,10 @@ namespace ViewExtensions
 {
     public static class LinkExtensions
     {
-        public static MvcHtmlString ViewLink(this HtmlHelper htmlHelper, string viewKey)
+        public static MvcHtmlString ViewLink(
+            this HtmlHelper htmlHelper, string viewKey, string title = null, string cssClass = null)
         {
-            string viewLink = Views.ByKey(viewKey).ViewLink();
-            return new MvcHtmlString(viewLink);
-        }
-
-        public static MvcHtmlString ViewLink(this HtmlHelper htmlHelper, string viewKey, string title)
-        {
-            string viewLink = Views.ByKey(viewKey).ViewLink(title);
+            string viewLink = Views.ByKey(viewKey).ViewLink(title, cssClass);
             return new MvcHtmlString(viewLink);
         }
 

@@ -48,14 +48,17 @@ namespace ViewExtensions
             Description = ViewBagPageItem(@"Description", viewContent) ?? "";
         }
 
-        public string ViewLink()
+        public string ViewLink(string title = null, string cssClass = null)
         {
-            return Utils.LinkHtml(Url, Title);
-        }
+            string currentUrl = Utils.TrimTrailingIndex(HttpContext.Current.Request.Url.AbsolutePath);
+            string finalCssClass = cssClass;
 
-        public string ViewLink(string title)
-        {
-            return Utils.LinkHtml(Url, title);
+            if (currentUrl == Url)
+            {
+                finalCssClass = (string.IsNullOrEmpty(cssClass) ? "" : (cssClass + " ")) + "selected";
+            }
+
+            return Utils.LinkHtml(Url, title ?? Title, finalCssClass);
         }
 
         // Make sure that the item does not contain escaped characters or "",

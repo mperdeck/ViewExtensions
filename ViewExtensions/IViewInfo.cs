@@ -61,7 +61,6 @@ namespace ViewExtensions
         ///// as the htmlAttributes parameter of MVC's LinkExtensions.ActionLink.
         ///// </param>
         /// <returns></returns>
-        string ViewLink();
-        string ViewLink(string title);
+        string ViewLink(string title = null, string cssClass = null);
     }
 }

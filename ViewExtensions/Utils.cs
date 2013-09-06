@@ -14,7 +14,7 @@ namespace ViewExtensions
             string linkHtml = 
                 string.Format(@"<a {2} href=""{0}"">{1}</a>", 
                     url, HttpUtility.HtmlEncode(title), 
-                    (cssClass == null) ? "" : string.Format(@"class=""{0}""", cssClass));
+                    (string.IsNullOrEmpty(cssClass) ? "" : string.Format(@"class=""{0}""", cssClass)));
             
             return linkHtml;
         }
