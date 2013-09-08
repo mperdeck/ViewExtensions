@@ -105,7 +105,7 @@ namespace ViewExtensions
 
             if (!cleanedUrl.StartsWith("/")) { cleanedUrl = "/" + cleanedUrl; }
 
-            cleanedUrl = Utils.TrimTrailingIndex(cleanedUrl);
+            cleanedUrl = UrlHelpers.TrimTrailingIndex(cleanedUrl);
 
             if (!_viewInfosByUrl.ContainsKey(cleanedUrl))
             {
@@ -129,6 +129,57 @@ namespace ViewExtensions
 
                 sb.AppendLine(viewInfo.ViewLink(null, cssClass));
             }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Generates a table listing all children (but not their grand children, etc)
+        /// of the current page.
+        /// 
+        /// Whether a page is a child depends on its url:
+        /// /a/b     current page
+        /// /a/b/c   child page
+        /// 
+        /// The table has 2 columns:
+        /// 1) link to the child page
+        /// 2) description of the child
+        /// </summary>
+        /// <param name="column1Header">
+        /// Header of the first column. Header of the second column is always "Description".
+        /// </param>
+        /// <param name="cssClass">
+        /// Class to be given to the table tag. Leave null if no class to be given.
+        /// </param>
+        /// <returns>
+        /// Html of the table. Null if there are no children.
+        /// </returns>
+        public static string TableChildrenCurrentPage(string column1Header = "Member", string cssClass = null)
+        {
+            string currentUrl = UrlHelpers.CurrentUrl();
+            int currentUrlNbrSlashes = NbrForwardSlashes(currentUrl);
+            int childUrlNbrSlashes = currentUrlNbrSlashes + 1;
+
+            var sb = new StringBuilder();
+            sb.AppendLine(string.Format("<table {0}>", HtmlHelpers.ClassAttribute(cssClass)));
+            sb.AppendLine(string.Format(@"<thead><tr><th align=""left"">{0}</th><th align=""left"">Description</th></tr></thead>", column1Header));
+            sb.AppendLine("<tbody>");
+
+            bool viewInfosFound = false;
+            _viewInfos
+                .Where(v => v.Url.StartsWith(currentUrl) && (NbrForwardSlashes(v.Url) == childUrlNbrSlashes))
+                .OrderBy(v => v.Url)
+                .ToList()
+                .ForEach(v =>
+                {
+                    sb.AppendLine(HtmlHelpers.TableRowLinkedHtml(v.Url, v.Title, v.Description));
+                    viewInfosFound = true;
+                });
+
+            if (!viewInfosFound) { return null; }
+
+            sb.AppendLine("</tbody>");
+            sb.AppendLine("</table>");
 
             return sb.ToString();
         }

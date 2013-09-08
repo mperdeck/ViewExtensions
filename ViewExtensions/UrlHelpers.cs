@@ -7,18 +7,8 @@ using System.Web;
 
 namespace ViewExtensions
 {
-    public static class Utils
+    public static class UrlHelpers
     {
-        public static string LinkHtml(string url, string title, string cssClass = null)
-        {
-            string linkHtml = 
-                string.Format(@"<a {2} href=""{0}"">{1}</a>", 
-                    url, HttpUtility.HtmlEncode(title), 
-                    (string.IsNullOrEmpty(cssClass) ? "" : string.Format(@"class=""{0}""", cssClass)));
-            
-            return linkHtml;
-        }
-
         public static string TrimTrailingIndex(string url)
         {
             const string indexPart = "index";
@@ -36,6 +26,12 @@ namespace ViewExtensions
             }
 
             return url;
+        }
+
+        public static string CurrentUrl()
+        {
+            string currentUrl = TrimTrailingIndex(HttpContext.Current.Request.Url.AbsolutePath);
+            return currentUrl;
         }
     }
 }

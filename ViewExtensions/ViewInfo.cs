@@ -35,7 +35,7 @@ namespace ViewExtensions
                     string.Format("{0} does not end with {1}", viewFullPath, Constants.ViewFileExtension));
             }
 
-            Url = Utils.TrimTrailingIndex(viewPathRelativeToViewRoot
+            Url = UrlHelpers.TrimTrailingIndex(viewPathRelativeToViewRoot
                 .Substring(0, viewPathRelativeToViewRoot.Length - Constants.ViewFileExtension.Length));
 
             // ---------------
@@ -50,7 +50,7 @@ namespace ViewExtensions
 
         public string ViewLink(string title = null, string cssClass = null)
         {
-            string currentUrl = Utils.TrimTrailingIndex(HttpContext.Current.Request.Url.AbsolutePath);
+            string currentUrl = UrlHelpers.CurrentUrl();
             string finalCssClass = cssClass;
 
             if (currentUrl == Url)
@@ -58,7 +58,7 @@ namespace ViewExtensions
                 finalCssClass = (string.IsNullOrEmpty(cssClass) ? "" : (cssClass + " ")) + "selected";
             }
 
-            return Utils.LinkHtml(Url, title ?? Title, finalCssClass);
+            return HtmlHelpers.LinkHtml(Url, title ?? Title, finalCssClass);
         }
 
         // Make sure that the item does not contain escaped characters or "",

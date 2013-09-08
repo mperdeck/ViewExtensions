@@ -45,8 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="HtmlHelpers.cs" />
     <Compile Include="LinkExtensions.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="UrlHelpers.cs" />
     <Compile Include="ViewExtensionsException.cs" />
     <Compile Include="ViewInfo.cs" />
     <Compile Include="IViewInfo.cs" />

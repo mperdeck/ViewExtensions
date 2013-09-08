@@ -23,5 +23,21 @@ namespace ViewExtensions
             return new MvcHtmlString(viewMenu);
         }
 
+        public static MvcHtmlString ChildrenTable(
+            this HtmlHelper htmlHelper, 
+            string column1Header = "Members", 
+            string cssClass = null)
+        {
+            string tableHtml = Views.TableChildrenCurrentPage(column1Header, cssClass);
+            return new MvcHtmlString(tableHtml);
+        }
+
+        public static MvcHtmlString TableRowHtml(
+            this HtmlHelper htmlHelper,
+            string title, string subTitle, params string[] rowValues)
+        {
+            string tableRowHtml = HtmlHelpers.TableRowHtml(title, subTitle, rowValues);
+            return new MvcHtmlString(tableRowHtml);
+        }
     }
 }
