@@ -39,8 +39,11 @@ namespace ViewExtensions
 
             foreach(string rowValue in rowValues)
             {
-                // Do not html encode row values. That way, you can use links in the row values.
-                rowHtml.AppendLine(string.Format(@"<td valign=""top"">{0}</td>", rowValue));
+                if (rowValue != null)
+                {
+                    // Do not html encode row values. That way, you can use links in the row values.
+                    rowHtml.AppendLine(string.Format(@"<td valign=""top"">{0}</td>", rowValue));
+                }
             }
 
             rowHtml.AppendLine("</tr>");

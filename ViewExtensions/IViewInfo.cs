@@ -60,7 +60,16 @@ namespace ViewExtensions
         ///// Additional html attributes to add to the anchor tag. Works the same way
         ///// as the htmlAttributes parameter of MVC's LinkExtensions.ActionLink.
         ///// </param>
+        /// <param name="title">
+        /// Title of the link. If null, title of the page itself is used. 
+        /// </param>
+        /// <param name="cssClass">
+        /// CSS class to add to the anchor tag. If null, no class attribute is generated.
+        /// </param>
+        /// <param name="fragment">
+        /// If not null, this is added to the url after a #.
+        /// </param>
         /// <returns></returns>
-        string ViewLink(string title = null, string cssClass = null);
+        string ViewLink(string title = null, string cssClass = null, string fragment = null);
     }
 }

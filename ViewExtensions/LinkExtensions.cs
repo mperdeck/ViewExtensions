@@ -11,9 +11,10 @@ namespace ViewExtensions
     public static class LinkExtensions
     {
         public static MvcHtmlString ViewLink(
-            this HtmlHelper htmlHelper, string viewKey, string title = null, string cssClass = null)
+            this HtmlHelper htmlHelper, string viewKey, string title = null, 
+            string cssClass = null, string fragment = null)
         {
-            string viewLink = Views.ByKey(viewKey).ViewLink(title, cssClass);
+            string viewLink = Views.ByKey(viewKey).ViewLink(title, cssClass, fragment);
             return new MvcHtmlString(viewLink);
         }
 
@@ -25,7 +26,7 @@ namespace ViewExtensions
 
         public static MvcHtmlString ChildrenTable(
             this HtmlHelper htmlHelper, 
-            string column1Header = "Members", 
+            string column1Header = "Member", 
             string cssClass = null)
         {
             string tableHtml = Views.TableChildrenCurrentPage(column1Header, cssClass);
