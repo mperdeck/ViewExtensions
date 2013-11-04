@@ -64,30 +64,29 @@ namespace ViewExtensions
                 return null;
             }
 
-            // First try query string parameter
+            // First try query string parameter or sub domain
 
-            VersionInfo versionInfo = GetCurrentVersion();
+            VersionInfo versionInfo = GetCurrentVersionInfoFromUrl();
 
-            if (!String.IsNullOrEmpty(versionName))
+            if (versionInfo != null)
             {
-                if (_versionInfos.Any(v=>v.VersionName == versionName)) 
-                {
-                    if (_useCookies)
-                    {
-                        // Set cookie, so when other pages are opened user gets same version
-                        HttpContext.Current.Response.Cookies[CookieName].Value = versionName;
-                        HttpContext.Current.Request.Cookies[CookieName].Expires = DateTime.Now.AddYears(1);
-                    }
+                string versionName = versionInfo.VersionName;
 
-                    return versionName;
+                if (_useCookies)
+                {
+                    // Set cookie, so when other pages are opened user gets same version
+                    HttpContext.Current.Response.Cookies[CookieName].Value = versionName;
+                    HttpContext.Current.Request.Cookies[CookieName].Expires = DateTime.Now.AddYears(1);
                 }
+
+                return versionName;
             }
 
             if (_useCookies)
             {
                 // Then try cookie
 
-                versionName = GetVersionName(); 
+                string versionName = HttpContext.Current.Response.Cookies[CookieName].Value; 
                 if (!String.IsNullOrEmpty(versionName))
                 {
                     if (_versionInfos.Any(v => v.VersionName == versionName))
@@ -117,14 +116,14 @@ namespace ViewExtensions
                 else
                 {
                     sb.AppendFormat(
-                        @"<a href=""{0}"">{1}</a>", UrlWithVersionName(versionInfo.VersionName), versionInfo.Caption);
+                        @"<a href=""{0}"">{1}</a>", UrlWithVersionUrlName(versionInfo.VersionUrlName), versionInfo.Caption);
                 }
             }
 
             return new MvcHtmlString(sb.ToString());
         }
 
-        private static string GetCurrentVersion()
+        private static VersionInfo GetCurrentVersionInfoFromUrl()
         {
             string versionUrlName = null;
 
@@ -134,27 +133,28 @@ namespace ViewExtensions
             }
             else
             {
-                versionUrlName = (string)HttpContext.Current.Request.Cookies[CookieName].Value;
+                versionUrlName = (string)HttpContext.Current.Request.QueryString[VersionUrlParam];
             }
 
             VersionInfo versionInfo = _versionInfos.SingleOrDefault(v => v.VersionUrlName == versionUrlName);
+            return versionInfo;
         }
 
-        private static string UrlWithVersionName(string versionName)
+        private static string UrlWithVersionUrlName(string versionUrlName)
         {
             if (!_useSubDomain)
             {
-                return string.Format("?{0}={1}", VersionUrlParam, versionName);
+                return string.Format("?{0}={1}", VersionUrlParam, versionUrlName);
             }
 
-            // Take current uri, and replace sub domain with version name.
+            // Take current uri, and replace sub domain with version url name.
             //
             // This assumes that the pattern "//subdomain." (2 x forward slash, followed by sub domain, followed by .)
             // doesn't appear anywhere else in the uri.
 
             // If new version is the default, do not use a sub domain
-            string newSubdomainWithDot = versionName + ".";
-            if (_versionInfos.Single(v => v.VersionName == versionName).IsDefault)
+            string newSubdomainWithDot = versionUrlName + ".";
+            if (_versionInfos.Single(v => v.VersionUrlName == versionUrlName).IsDefault)
             {
                 newSubdomainWithDot = "";
             }
