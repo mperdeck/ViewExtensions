@@ -20,6 +20,8 @@ namespace ViewExtensions
 
         public string Description { get; protected set; }
 
+        public string VersionNameRegex { get; protected set; }
+
         public void Load(string viewFullPath, string viewFilesRootFullPath, string viewContent)
         {
             string viewPathRelativeToViewRoot = viewFullPath.Substring(viewFilesRootFullPath.Length)
@@ -46,6 +48,8 @@ namespace ViewExtensions
             Key = ViewBagPageItem(@"Key", viewContent) ?? Url;
 
             Description = ViewBagPageItem(@"Description", viewContent) ?? "";
+
+            VersionNameRegex = ViewBagPageItem(@"VersionNameRegex", viewContent) ?? "";
         }
 
         public string ViewLink(string title = null, string cssClass = null, string fragment = null)
@@ -65,6 +69,32 @@ namespace ViewExtensions
             }
 
             return HtmlHelpers.LinkHtml(finalUrl, title ?? Title, finalCssClass);
+        }
+
+        public string ViewUrl(string fragment = null)
+        {
+            string finalUrl = Url;
+            if (fragment != null)
+            {
+                finalUrl += "#" + fragment;
+            }
+
+            return finalUrl;
+        }
+
+        public bool ShowInMenuForCurrentVersion()
+        {
+            string currentVersionName = PageVersions.CurrentVersion();
+            if (currentVersionName == null) { return true; }
+
+            if (string.IsNullOrEmpty(VersionNameRegex)) { return true; }
+
+            if (Regex.IsMatch(currentVersionName, VersionNameRegex))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         // Make sure that the item does not contain escaped characters or "",

@@ -47,6 +47,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="HtmlHelpers.cs" />
     <Compile Include="LinkExtensions.cs" />
+    <Compile Include="PageVersions.cs" />
     <Compile Include="UrlHelpers.cs" />
     <Compile Include="ViewExtensionsException.cs" />
     <Compile Include="ViewInfo.cs" />

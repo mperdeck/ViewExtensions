@@ -118,7 +118,8 @@ namespace ViewExtensions
 
         public static string ViewMenu()
         {
-            var sortedViewInfos = _viewInfos.OrderBy(v => v.Url).AsEnumerable<IViewInfo>().ToList();
+            var pagesToShowInMenu = _viewInfos.Where(v => v.ShowInMenuForCurrentVersion());
+            var sortedViewInfos = pagesToShowInMenu.OrderBy(v => v.Url).AsEnumerable<IViewInfo>().ToList();
             int lengthRootViewFullPath = rootViewFullPath.Length;
 
             var sb = new StringBuilder();
@@ -167,7 +168,9 @@ namespace ViewExtensions
 
             bool viewInfosFound = false;
             _viewInfos
-                .Where(v => v.Url.StartsWith(currentUrl) && (NbrForwardSlashes(v.Url) == childUrlNbrSlashes))
+                .Where(v => v.Url.StartsWith(currentUrl) && 
+                            (NbrForwardSlashes(v.Url) == childUrlNbrSlashes) &&
+                            v.ShowInMenuForCurrentVersion())
                 .OrderBy(v => v.Url)
                 .ToList()
                 .ForEach(v =>

@@ -40,6 +40,13 @@ namespace ViewExtensions
         string Description { get; }
 
         /// <summary>
+        /// This is a regex.
+        /// If this is not null or empty, then the name of the current version is matched against this regex.
+        /// If there is no match, the page is not shown in menus.
+        /// </summary>
+        string VersionNameRegex { get; }
+
+        /// <summary>
         /// Sets the properties of this IPageInfo based on the input parameters.
         /// </summary>
         /// <param name="viewFullPath">
@@ -71,5 +78,22 @@ namespace ViewExtensions
         /// </param>
         /// <returns></returns>
         string ViewLink(string title = null, string cssClass = null, string fragment = null);
+
+        /// <summary>
+        /// Returns the url of the view.
+        /// </summary>
+        /// <param name="fragment">
+        /// If not null, this is added to the url after a #.
+        /// </param>
+        /// <returns></returns>
+        string ViewUrl(string fragment = null);
+
+        /// <summary>
+        /// Returns true if this page should be shown in menus, given the versions that the
+        /// site has been switched to by the user.
+        /// If site versioning is not being used, this always returns true.
+        /// </summary>
+        /// <returns></returns>
+        bool ShowInMenuForCurrentVersion();
     }
 }

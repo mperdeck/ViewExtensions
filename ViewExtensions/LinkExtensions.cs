@@ -18,6 +18,12 @@ namespace ViewExtensions
             return new MvcHtmlString(viewLink);
         }
 
+        public static string ViewUrl(this HtmlHelper htmlHelper, string viewKey, string fragment = null)
+        {
+            string viewUrl = Views.ByKey(viewKey).ViewUrl(fragment);
+            return viewUrl;
+        }
+
         public static MvcHtmlString ViewMenu(this HtmlHelper htmlHelper)
         {
             string viewMenu = Views.ViewMenu();
