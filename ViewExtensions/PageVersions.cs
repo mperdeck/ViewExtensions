@@ -22,6 +22,11 @@ namespace ViewExtensions
         public class VersionInfo
         {
             public string VersionUrlName { get; set; } // Used in url
+
+            // Overrides VersionUrlName. If this is not null, the link in a version switcher always has this url.
+            // If you're on a page with this url and use the version switcher, this version will be shown as the current version.
+            public string VersionUrlOverride { get; set; } 
+            
             public string VersionName { get; set; } // Used in C# code
             public string Caption { get; set; } // Used in version switcher
             public bool IsDefault { get; set; }
@@ -64,9 +69,10 @@ namespace ViewExtensions
                 return null;
             }
 
-            // First try query string parameter or sub domain
+            // First try get version from url
 
-            VersionInfo versionInfo = GetCurrentVersionInfoFromUrl();
+            Uri url = HttpContext.Current.Request.Url;
+            VersionInfo versionInfo = GetCurrentVersionInfoFromUrl(url);
 
             if (versionInfo != null)
             {
@@ -113,34 +119,58 @@ namespace ViewExtensions
                 {
                     sb.AppendFormat("<span>{0}</span>", versionInfo.Caption);
                 }
-                else
+                else if (versionInfo.VersionUrlOverride != null)
                 {
                     sb.AppendFormat(
-                        @"<a href=""{0}"">{1}</a>", UrlWithVersionUrlName(versionInfo.VersionUrlName), versionInfo.Caption);
+                        @"<a href=""{0}"">{1}</a>", versionInfo.VersionUrlOverride, versionInfo.Caption);
+                }
+                else
+                {
+                    Uri url = HttpContext.Current.Request.Url;
+                    sb.AppendFormat(
+                        @"<a href=""{0}"">{1}</a>", UrlHelpers.DomainOnlyUrl(UrlWithVersionUrlName(url, versionInfo.VersionUrlName)), versionInfo.Caption);
                 }
             }
 
             return new MvcHtmlString(sb.ToString());
         }
 
-        private static VersionInfo GetCurrentVersionInfoFromUrl()
+        private static VersionInfo GetCurrentVersionInfoFromUrl(Uri url)
         {
             string versionUrlName = null;
 
+            // Check versions that have a url override
+
+            string currentUrl = url.ToString();
+            string currentUrlWithoutWww = currentUrl.Replace("http://www.", "http://");
+            VersionInfo versionInfo = _versionInfos.SingleOrDefault(v => (v.VersionUrlOverride == currentUrl));
+
+            if (versionInfo != null)
+            {
+                return versionInfo;
+            }
+
+            // No direct match with url override found. Try to use version url name.
+
             if (_useSubDomain)
             {
-                versionUrlName = RequestSubdomain();
+                versionUrlName = RequestSubdomain(url);
             }
             else
             {
                 versionUrlName = (string)HttpContext.Current.Request.QueryString[VersionUrlParam];
             }
 
-            VersionInfo versionInfo = _versionInfos.SingleOrDefault(v => v.VersionUrlName == versionUrlName);
+            if (versionUrlName == null)
+            {
+                return null;
+            }
+
+            versionInfo = _versionInfos.SingleOrDefault(v => (v.VersionUrlName == versionUrlName));
             return versionInfo;
         }
 
-        private static string UrlWithVersionUrlName(string versionUrlName)
+        public static string UrlWithVersionUrlName(Uri url, string versionUrlName)
         {
             if (!_useSubDomain)
             {
@@ -159,8 +189,8 @@ namespace ViewExtensions
                 newSubdomainWithDot = "";
             }
 
-            string currentUri = HttpContext.Current.Request.Url.ToString();
-            string currentSubDomain = RequestSubdomain();
+            string currentUri = url.ToString();
+            string currentSubDomain = RequestSubdomain(url);
             string newUri = "";
 
             if (string.IsNullOrEmpty(currentSubDomain))
@@ -178,22 +208,28 @@ namespace ViewExtensions
         }
 
         /// <summary>
-        /// Returns the sub domain in the current request.
+        /// Returns the sub domain in the passed in URL.
         /// 
         /// Returns null if there is no sub domain.
         /// 
         /// Assumes that the domain is not country specific. 
         /// For example, jsnlog.com but not jsnlog.com.au.
+        /// 
+        /// Note that the domain could be localhost, in which case you can
+        /// have js.localhost, etc.
         /// </summary>
         /// <returns></returns>
-        private static string RequestSubdomain()
+        private static string RequestSubdomain(Uri url)
         {
-            Uri currentUri = HttpContext.Current.Request.Url;
-
-            string[] uriParts = currentUri.Host.Split(new[] { '.' });
+            string[] uriParts = url.Host.Split(new[] { '.' });
 
             // If there are only 2 or 1 parts in the host name, you can't have a sub domain.
-            if (uriParts.Length < 3)
+            // However, if the last part is localhost, you can have 2 parts.
+
+            int nbrParts = uriParts.Length;
+            int minimumNbrParts = (uriParts[nbrParts - 1].ToLower() == "localhost") ? 2 : 3;
+
+            if (uriParts.Length < minimumNbrParts)
             {
                 return null;
             }
