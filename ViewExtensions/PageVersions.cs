@@ -110,6 +110,11 @@ namespace ViewExtensions
 
         public static MvcHtmlString VersionSwitcher(this HtmlHelper htmlHelper)
         {
+            if (_versionInfos == null)
+            {
+                return null;
+            }
+
             var versionName = CurrentVersion();
             var sb = new StringBuilder();
 
