@@ -122,18 +122,22 @@ namespace ViewExtensions
             {
                 if (versionInfo.VersionName == versionName)
                 {
-                    sb.AppendFormat("<span>{0}</span>", versionInfo.Caption);
+                    // Class is used for bootstrap styling
+                    sb.AppendFormat(@"<span class=""btn btn-primary"">{0}</span>", versionInfo.Caption);
                 }
                 else if (versionInfo.VersionUrlOverride != null)
                 {
+                    // Class is used for bootstrap styling
                     sb.AppendFormat(
-                        @"<a href=""{0}"">{1}</a>", versionInfo.VersionUrlOverride, versionInfo.Caption);
+                        @"<a class=""btn btn-default"" href=""{0}"">{1}</a>", versionInfo.VersionUrlOverride, versionInfo.Caption);
                 }
                 else
                 {
                     Uri url = HttpContext.Current.Request.Url;
+
+                    // Class is used for bootstrap styling
                     sb.AppendFormat(
-                        @"<a href=""{0}"">{1}</a>", UrlHelpers.DomainOnlyUrl(UrlWithVersionUrlName(url, versionInfo.VersionUrlName)), versionInfo.Caption);
+                        @"<a class=""btn btn-default"" href=""{0}"">{1}</a>", UrlHelpers.DomainOnlyUrl(UrlWithVersionUrlName(url, versionInfo.VersionUrlName)), versionInfo.Caption);
                 }
             }
 
