@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Web;
+using System.Web.Mvc;
 
 namespace ViewExtensions
 {
@@ -126,12 +127,54 @@ namespace ViewExtensions
 
             foreach (IViewInfo viewInfo in sortedViewInfos)
             {
-                string cssClass = string.Format("level{0}", NbrForwardSlashes(viewInfo.Url));
+                string cssClass = string.Format("level{0}", NbrComponents(viewInfo.Url) + 1);
 
                 sb.AppendLine(viewInfo.ViewLink(null, cssClass));
             }
 
             return sb.ToString();
+        }
+
+        public static string Breadcrumbs()
+        {
+            string currentUrl = UrlHelpers.CurrentUrl();
+            int nbrComponents = NbrComponents(currentUrl);
+
+            // If there is only one component, there is no need to have a breadcrumb.
+            // Note that a url starts with /Documentation, so if the user is in Configuration (top level section,
+            // no breadcrumb needed), the url is /Documentation/Configuration
+            if (nbrComponents <= 2)
+            {
+                return "";
+            }
+
+            // Will contain infos for each breadcrumb element
+            var viewInfos = new List<IViewInfo>(nbrComponents);
+
+            List<string> components = Components(currentUrl);
+
+            // Skip the first component, because that is always Documentation,
+            // and /Documentation doesn't match a page and is not a url stored in viewInfos.
+            for(int i = 1; i < nbrComponents; i++)
+            {
+                List<string> componentsThisUrl = components.Take(i + 1).ToList();
+                string url = "/" + string.Join("/", componentsThisUrl);
+                IViewInfo viewInfo = ByUrl(url);
+                viewInfos.Add(viewInfo);
+            }
+
+            // All but the last view info becomes an anchor. The last one is just the title.
+            List<string> breadCrumbComponents =
+                viewInfos.Take(viewInfos.Count - 1).Select(c=>c.ViewLink(null, null, null)).ToList();
+
+            breadCrumbComponents.Add(
+                "<span class=\"breadcrumb-final-title\">" + 
+                HttpUtility.HtmlEncode(viewInfos.Last().Title) + 
+                "</span>");
+
+            string breakCrumbHtml = string.Join(" <span class=\"breadcrumb-separator\">&#9654;</span> ", breadCrumbComponents);
+
+            return breakCrumbHtml;
         }
 
         /// <summary>
@@ -158,8 +201,8 @@ namespace ViewExtensions
         public static string TableChildrenCurrentPage(string column1Header = "Member", string cssClass = null)
         {
             string currentUrl = UrlHelpers.CurrentUrl();
-            int currentUrlNbrSlashes = NbrForwardSlashes(currentUrl);
-            int childUrlNbrSlashes = currentUrlNbrSlashes + 1;
+            int currentUrlNbrComponents = NbrComponents(currentUrl);
+            int childUrlNbrComponents = currentUrlNbrComponents + 1;
 
             var sb = new StringBuilder();
             sb.AppendLine(string.Format("<table {0}>", HtmlHelpers.ClassAttribute(cssClass)));
@@ -169,7 +212,7 @@ namespace ViewExtensions
             bool viewInfosFound = false;
             _viewInfos
                 .Where(v => v.Url.StartsWith(currentUrl) && 
-                            (NbrForwardSlashes(v.Url) == childUrlNbrSlashes) &&
+                            (NbrComponents(v.Url) == childUrlNbrComponents) &&
                             v.ShowInMenuForCurrentVersion())
                 .OrderBy(v => v.Url)
                 .ToList()
@@ -187,10 +230,21 @@ namespace ViewExtensions
             return sb.ToString();
         }
 
-        public static int NbrForwardSlashes(string url)
+        public static List<string> Components(string url)
         {
-            int nbrSlashes = url.Split(new char[] { '/' }).Length;
-            return nbrSlashes;
+            List<string> components = url.Split(new char[] { '/' }).ToList();
+            int nbrComponents = components.Count();
+
+            // Url starts with /Documentation/, so first component is empty and second component doesn't get stored
+            var componentsExceptFirst = components.Skip(1).Take(nbrComponents - 1).ToList();
+
+            return componentsExceptFirst;
+        }
+
+        public static int NbrComponents(string url)
+        {
+            int nbrComponents = Components(url).Count();
+            return nbrComponents;
         }
     }
 }

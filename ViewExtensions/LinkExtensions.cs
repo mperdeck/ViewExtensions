@@ -37,6 +37,12 @@ namespace ViewExtensions
             return new MvcHtmlString(viewMenu);
         }
 
+        public static MvcHtmlString Breadcrumbs(this HtmlHelper htmlHelper)
+        {
+            string breadcrumbs = Views.Breadcrumbs();
+            return new MvcHtmlString(breadcrumbs);
+        }
+
         public static MvcHtmlString ChildrenTable(
             this HtmlHelper htmlHelper, 
             string column1Header = "Member", 
