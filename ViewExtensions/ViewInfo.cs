@@ -22,6 +22,8 @@ namespace ViewExtensions
 
         public string VersionNameRegex { get; protected set; }
 
+        public int Order { get; protected set; }
+
         public void Load(string viewFullPath, string viewFilesRootFullPath, string viewContent)
         {
             string viewPathRelativeToViewRoot = viewFullPath.Substring(viewFilesRootFullPath.Length)
@@ -50,6 +52,9 @@ namespace ViewExtensions
             Description = ViewBagPageItem(@"Description", viewContent) ?? "";
 
             VersionNameRegex = ViewBagPageItem(@"VersionNameRegex", viewContent) ?? "";
+
+            string orderString = ViewBagPageItem(@"Order", viewContent) ?? "1000";
+            Order = int.Parse(orderString);
         }
 
         public string ViewLink(string title = null, string cssClass = null, string fragment = null)

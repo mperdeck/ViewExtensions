@@ -214,7 +214,8 @@ namespace ViewExtensions
                 .Where(v => v.Url.StartsWith(currentUrl) && 
                             (NbrComponents(v.Url) == childUrlNbrComponents) &&
                             v.ShowInMenuForCurrentVersion())
-                .OrderBy(v => v.Url)
+                .OrderBy(v => v.Order)
+                .ThenBy(v => v.Url)
                 .ToList()
                 .ForEach(v =>
                 {

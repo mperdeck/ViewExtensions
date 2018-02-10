@@ -47,6 +47,16 @@ namespace ViewExtensions
         string VersionNameRegex { get; }
 
         /// <summary>
+        /// Pages with lower order get sorted before those with higher order.
+        /// Pages with same order are sorted by their url.
+        /// When Order is not given on the page, default is 1000.
+        /// 
+        /// Note that order is only relevant amongst siblings. A child will never be ordered
+        /// away from its parent.
+        /// </summary>
+        int Order { get; }
+
+        /// <summary>
         /// Sets the properties of this IPageInfo based on the input parameters.
         /// </summary>
         /// <param name="viewFullPath">
