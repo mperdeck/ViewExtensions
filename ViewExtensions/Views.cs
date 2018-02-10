@@ -82,6 +82,12 @@ namespace ViewExtensions
                 _viewInfos.Add(newViewInfo);
                 _viewInfosByKey[newViewInfo.Key] = newViewInfo;
                 _viewInfosByUrl[newViewInfo.Url] = newViewInfo;
+
+                string parentUrl = ParentUrl(newViewInfo.Url);
+                if (_viewInfosByUrl.ContainsKey(parentUrl))
+                {
+                    _viewInfosByUrl[parentUrl].Children.Add(newViewInfo);
+                }
             }
         }
 
@@ -262,6 +268,23 @@ namespace ViewExtensions
         {
             int nbrComponents = Components(url).Count();
             return nbrComponents;
+        }
+
+        /// <summary>
+        /// Returns the parent url. For example, if passed in url is
+        /// /a/b/c
+        /// then parent url is
+        /// /a/b
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string ParentUrl(string url)
+        {
+            // Should never be -1
+            int idxLastSlash = url.LastIndexOf('/');
+
+            string parent = url.Substring(0, idxLastSlash);
+            return parent;
         }
     }
 }
