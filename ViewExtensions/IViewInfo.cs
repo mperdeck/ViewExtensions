@@ -57,6 +57,11 @@ namespace ViewExtensions
         int Order { get; }
 
         /// <summary>
+        /// Child pages of this page. If the page has no children, this is the empty list.
+        /// </summary>
+        List<IViewInfo> Children { get; }
+
+        /// <summary>
         /// Sets the properties of this IPageInfo based on the input parameters.
         /// </summary>
         /// <param name="viewFullPath">

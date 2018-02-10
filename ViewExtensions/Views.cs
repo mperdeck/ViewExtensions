@@ -48,7 +48,10 @@ namespace ViewExtensions
             _viewInfosByUrl = new Dictionary<string, IViewInfo>();
             _viewInfos = new List<IViewInfo>();
 
-            var viewFilePaths = Directory.EnumerateFiles(rootViewFullPath, "*.cshtml", SearchOption.AllDirectories);
+            // Order the file paths alphabetically, so parent pages will come before their children.
+            var viewFilePaths = 
+                Directory.EnumerateFiles(rootViewFullPath, "*.cshtml", SearchOption.AllDirectories)
+                .OrderBy(p=>p);
 
             foreach (string viewFilePath in viewFilePaths)
             {
