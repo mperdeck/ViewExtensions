@@ -34,6 +34,19 @@ namespace ViewExtensions
 
         public static void Load<T>(string rootViewPath) where T : IViewInfo, new()
         {
+            Load<T>(
+                rootViewPath,
+                url => HttpContext.Current.Server.MapPath(url),
+                dirPath => Directory.EnumerateFiles(dirPath, "*.cshtml", SearchOption.AllDirectories),
+                path => File.ReadAllText(path));
+        }
+
+        public static void Load<T>(
+            string rootViewPath,
+            Func<string, string> mapPath,
+            Func<string, IEnumerable<string>> allCSHtmlFilesInDirectory,
+            Func<string, string> readAllText) where T : IViewInfo, new()
+        {
             if (!rootViewPath.StartsWith(Constants.ViewFilesRoot))
             {
                 throw new ViewExtensionsException(
@@ -41,16 +54,16 @@ namespace ViewExtensions
                     rootViewPath, Constants.ViewFilesRoot));
             }
 
-            string viewFilesRootFullPath = HttpContext.Current.Server.MapPath(Constants.ViewFilesRoot);
-            rootViewFullPath = HttpContext.Current.Server.MapPath(rootViewPath);
+            string viewFilesRootFullPath = mapPath(Constants.ViewFilesRoot);
+            rootViewFullPath = mapPath(rootViewPath);
 
             _viewInfosByKey = new Dictionary<string, IViewInfo>();
             _viewInfosByUrl = new Dictionary<string, IViewInfo>();
             _viewInfos = new List<IViewInfo>();
 
             // Order the file paths alphabetically, so parent pages will come before their children.
-            var viewFilePaths = 
-                Directory.EnumerateFiles(rootViewFullPath, "*.cshtml", SearchOption.AllDirectories)
+            var viewFilePaths =
+                allCSHtmlFilesInDirectory(rootViewFullPath)
                 .OrderBy(p=>p);
 
             foreach (string viewFilePath in viewFilePaths)
@@ -61,7 +74,7 @@ namespace ViewExtensions
                 string fileName = Path.GetFileName(viewFilePath);
                 if (fileName.StartsWith("_")) { continue; }
 
-                string viewFileContent = File.ReadAllText(viewFilePath);
+                string viewFileContent = readAllText(viewFilePath);
 
                 T newViewInfo = new T();
                 newViewInfo.Load(viewFilePath, viewFilesRootFullPath, viewFileContent);
