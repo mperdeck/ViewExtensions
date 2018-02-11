@@ -15,6 +15,7 @@ namespace ViewExtensions
         private static Dictionary<string, IViewInfo> _viewInfosByUrl = null;
         private static List<IViewInfo> _viewInfos = null;
         private static IViewInfo _documentationRootViewInfo = null;
+        private static Func<string> _currentUrl;
 
         private static string rootViewFullPath = null;
 
@@ -39,14 +40,16 @@ namespace ViewExtensions
                 rootViewPath,
                 url => HttpContext.Current.Server.MapPath(url),
                 dirPath => Directory.EnumerateFiles(dirPath, "*.cshtml", SearchOption.AllDirectories),
-                path => File.ReadAllText(path));
+                path => File.ReadAllText(path),
+                UrlHelpers.CurrentUrl);
         }
 
         public static void Load<T>(
             string rootViewPath,
             Func<string, string> mapPath,
             Func<string, IEnumerable<string>> allCSHtmlFilesInDirectory,
-            Func<string, string> readAllText) where T : IViewInfo, new()
+            Func<string, string> readAllText,
+            Func<string> currentUrl) where T : IViewInfo, new()
         {
             if (!rootViewPath.StartsWith(Constants.ViewFilesRoot))
             {
@@ -61,6 +64,7 @@ namespace ViewExtensions
             _viewInfosByKey = new Dictionary<string, IViewInfo>();
             _viewInfosByUrl = new Dictionary<string, IViewInfo>();
             _viewInfos = new List<IViewInfo>();
+            _currentUrl = currentUrl;
 
             // The ViewInfos form a tree based on their parent-children structure.
             // _documentationRootViewInfo is the root of the tree.
@@ -146,25 +150,65 @@ namespace ViewExtensions
 
         public static string ViewMenu()
         {
-            var pagesToShowInMenu = _viewInfos.Where(v => v.ShowInMenuForCurrentVersion());
-            var sortedViewInfos = pagesToShowInMenu.OrderBy(v => v.Url).AsEnumerable<IViewInfo>().ToList();
-            int lengthRootViewFullPath = rootViewFullPath.Length;
-
             var sb = new StringBuilder();
+            ViewMenuItem(_documentationRootViewInfo, 0, sb);
+            return sb.ToString();
+        }
 
-            foreach (IViewInfo viewInfo in sortedViewInfos)
+        /// <summary>
+        /// Adds the html for the given viewInfo to the sb.
+        /// </summary>
+        /// <param name="viewInfo"></param>
+        /// <param name="sb"></param>
+        /// <returns>
+        /// true if this element is selected, false otherwise.
+        /// </returns>
+        private static bool ViewMenuItem(IViewInfo viewInfo, int level, StringBuilder sb)
+        {
+            string cssClass = string.Format("level{0}", level);
+
+            bool isParent = (viewInfo.Children.Count > 0);
+            cssClass += isParent ? " parent" : " leaf";
+
+            string currentUrl = _currentUrl();
+            bool isSelected = (currentUrl == viewInfo.Url);
+            if (isSelected)
             {
-                string cssClass = string.Format("level{0}", NbrComponents(viewInfo.Url) + 1);
-
-                sb.AppendLine(viewInfo.ViewLink(null, cssClass));
+                cssClass += " selected";
             }
 
-            return sb.ToString();
+            // isOpen will become true if any of the children is selected
+            bool isOpen = false;
+            var sbChildren = new StringBuilder();
+
+            var orderedChildren = viewInfo.Children
+                                    .Where(v => v.ShowInMenuForCurrentVersion())
+                                    .OrderBy(v => v.Order)
+                                    .ThenBy(v => v.Url);
+
+            foreach (var child in orderedChildren)
+            {
+                sbChildren.AppendLine("<li>");
+                isOpen = isOpen || ViewMenuItem(child, level + 1, sbChildren);
+                sbChildren.AppendLine("</li>");
+            }
+
+            cssClass += isOpen ? " open" : " closed";
+
+            sb.AppendLine(viewInfo.ViewLink(null, cssClass));
+            if (sbChildren.Length > 0)
+            {
+                sb.AppendLine("<ol>");
+                sb.Append(sbChildren.ToString());
+                sb.AppendLine("</ol>");
+            }
+
+            return isSelected;
         }
 
         public static string Breadcrumbs()
         {
-            string currentUrl = UrlHelpers.CurrentUrl();
+            string currentUrl = _currentUrl();
             int nbrComponents = NbrComponents(currentUrl);
 
             // If there is only one component, there is no need to have a breadcrumb.

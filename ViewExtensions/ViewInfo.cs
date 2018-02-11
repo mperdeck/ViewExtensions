@@ -72,13 +72,7 @@ namespace ViewExtensions
 
         public string ViewLink(string title = null, string cssClass = null, string fragment = null)
         {
-            string currentUrl = UrlHelpers.CurrentUrl();
             string finalCssClass = cssClass;
-
-            if (currentUrl == Url)
-            {
-                finalCssClass = (string.IsNullOrEmpty(cssClass) ? "" : (cssClass + " ")) + "selected";
-            }
 
             string finalUrl = Url;
             if (fragment != null)

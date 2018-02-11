@@ -26,13 +26,14 @@ namespace ViewExtensions.Tests
             return mockFiles.Where(mf=>mf.Path == path).Select(mf => mf.Content).First();
         }
 
-        public static void MockLoad(IEnumerable<MockFile> mockFiles)
+        public static void MockLoad(IEnumerable<MockFile> mockFiles, string currentUrl)
         {
             Views.Load<ViewInfo>(
                 "",
                 MapPath,
                 path => AllMockedCSHtmlFilesInDirectory(mockFiles),
-                path => ReadAllMockText(mockFiles, path));
+                path => ReadAllMockText(mockFiles, path),
+                ()=> currentUrl);
         }
     }
 }
