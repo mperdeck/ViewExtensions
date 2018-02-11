@@ -26,6 +26,15 @@ namespace ViewExtensions
 
         public List<IViewInfo> Children { get; protected set; }
 
+        public ViewInfo()
+        {
+        }
+
+        public ViewInfo(string url)
+        {
+            Url = url;
+        }
+
         public void Load(string viewFullPath, string viewFilesRootFullPath, string viewContent)
         {
             string viewPathRelativeToViewRoot = viewFullPath.Substring(viewFilesRootFullPath.Length)
@@ -59,11 +68,6 @@ namespace ViewExtensions
 
             string orderString = ViewBagPageItem(@"Order", viewContent) ?? "1000";
             Order = int.Parse(orderString);
-
-
-
-
-
         }
 
         public string ViewLink(string title = null, string cssClass = null, string fragment = null)

@@ -10,5 +10,6 @@ namespace ViewExtensions
     {
         public static string ViewFileExtension = ".cshtml";
         public static string ViewFilesRoot = "/Views";
+        public static string DocumentationRootUrl = "/Documentation";
     }
 }

@@ -14,6 +14,7 @@ namespace ViewExtensions
         private static Dictionary<string, IViewInfo> _viewInfosByKey = null;
         private static Dictionary<string, IViewInfo> _viewInfosByUrl = null;
         private static List<IViewInfo> _viewInfos = null;
+        private static IViewInfo _documentationRootViewInfo = null;
 
         private static string rootViewFullPath = null;
 
@@ -61,6 +62,13 @@ namespace ViewExtensions
             _viewInfosByUrl = new Dictionary<string, IViewInfo>();
             _viewInfos = new List<IViewInfo>();
 
+            // The ViewInfos form a tree based on their parent-children structure.
+            // _documentationRootViewInfo is the root of the tree.
+            // Note it is not added to _viewInfos or _viewInfosByKey, because the root 
+            // is not an actual page that a user would request.
+            _documentationRootViewInfo = new ViewInfo(Constants.DocumentationRootUrl);
+            _viewInfosByUrl[Constants.DocumentationRootUrl] = _documentationRootViewInfo;
+
             // Order the file paths alphabetically, so parent pages will come before their children.
             var viewFilePaths =
                 allCSHtmlFilesInDirectory(rootViewFullPath)
@@ -84,10 +92,7 @@ namespace ViewExtensions
                 _viewInfosByUrl[newViewInfo.Url] = newViewInfo;
 
                 string parentUrl = ParentUrl(newViewInfo.Url);
-                if (_viewInfosByUrl.ContainsKey(parentUrl))
-                {
-                    _viewInfosByUrl[parentUrl].Children.Add(newViewInfo);
-                }
+                _viewInfosByUrl[parentUrl].Children.Add(newViewInfo);
             }
         }
 
