@@ -28,9 +28,10 @@ namespace ViewExtensions
 
         public ViewInfo()
         {
+            Children = new List<IViewInfo>();
         }
 
-        public ViewInfo(string url)
+        public ViewInfo(string url): this()
         {
             Url = url;
         }
@@ -41,8 +42,6 @@ namespace ViewExtensions
                 .Replace(@"\", "/");
 
             ViewPath = Constants.ViewFilesRoot + viewPathRelativeToViewRoot;
-
-            Children = new List<IViewInfo>();
 
             // ---------------
 

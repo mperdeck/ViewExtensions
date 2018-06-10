@@ -73,10 +73,10 @@ namespace ViewExtensions
             _documentationRootViewInfo = new ViewInfo(Constants.DocumentationRootUrl);
             _viewInfosByUrl[Constants.DocumentationRootUrl] = _documentationRootViewInfo;
 
-            // Order the file paths alphabetically, so parent pages will come before their children.
             var viewFilePaths =
-                allCSHtmlFilesInDirectory(rootViewFullPath)
-                .OrderBy(p=>p);
+                allCSHtmlFilesInDirectory(rootViewFullPath);
+
+            // Load all viewInfos
 
             foreach (string viewFilePath in viewFilePaths)
             {
@@ -94,9 +94,20 @@ namespace ViewExtensions
                 _viewInfos.Add(newViewInfo);
                 _viewInfosByKey[newViewInfo.Key] = newViewInfo;
                 _viewInfosByUrl[newViewInfo.Url] = newViewInfo;
+            }
 
-                string parentUrl = ParentUrl(newViewInfo.Url);
-                _viewInfosByUrl[parentUrl].Children.Add(newViewInfo);
+            // Load the Children info of the viewInfos
+
+            // Order the file paths alphabetically by the related Url, so parent pages will come before their children.
+
+            var viewInfosByUrl =
+                _viewInfos
+                .OrderBy(p => p.Url);
+
+            foreach (var viewInfo in viewInfosByUrl)
+            {
+                string parentUrl = ParentUrl(viewInfo.Url);
+                _viewInfosByUrl[parentUrl].Children.Add(viewInfo);
             }
         }
 
@@ -184,12 +195,13 @@ namespace ViewExtensions
             var orderedChildren = viewInfo.Children
                                     .Where(v => v.ShowInMenuForCurrentVersion())
                                     .OrderBy(v => v.Order)
-                                    .ThenBy(v => v.Url);
+                                    .ThenBy(v => v.Url).ToList();
 
             foreach (var child in orderedChildren)
             {
                 sbChildren.AppendLine("<li>");
-                isOpen = isOpen || ViewMenuItem(child, level + 1, sbChildren);
+                bool childIsSelected = ViewMenuItem(child, level + 1, sbChildren);
+                isOpen = isOpen || childIsSelected;
                 sbChildren.AppendLine("</li>");
             }
 
