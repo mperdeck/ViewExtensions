@@ -9,12 +9,19 @@ namespace ViewExtensions
 {
     public static class HtmlHelpers
     {
-        public static string LinkHtml(string url, string title, string cssClass = null)
+        public static string LinkHtml(string url, string title, string cssClass = null, string onClick = null)
         {
+            string onClickHtml = "";
+            if (!string.IsNullOrEmpty(onClick))
+            {
+                onClickHtml = " onclick='" + HttpUtility.JavaScriptStringEncode(onClick) + "'";
+            }
+
             string linkHtml = 
-                string.Format(@"<a {2} href=""{0}"">{1}</a>", 
+                string.Format(@"<a {2} href=""{0}""{3}>{1}</a>", 
                     url, HttpUtility.HtmlEncode(title), 
-                    ClassAttribute(cssClass));
+                    ClassAttribute(cssClass),
+                    onClickHtml);
             
             return linkHtml;
         }

@@ -12,17 +12,17 @@ namespace ViewExtensions
     {
         public static string ViewLink(
             string viewKey, string title = null,
-            string cssClass = null, string fragment = null)
+            string cssClass = null, string fragment = null, string onClick = null)
         {
-            string viewLink = Views.ByKey(viewKey).ViewLink(title, cssClass, fragment);
+            string viewLink = Views.ByKey(viewKey).ViewLink(title, cssClass, fragment, onClick);
             return viewLink;
         }
 
         public static MvcHtmlString ViewLink(
             this HtmlHelper htmlHelper, string viewKey, string title = null, 
-            string cssClass = null, string fragment = null)
+            string cssClass = null, string fragment = null, string onClick = null)
         {
-            return new MvcHtmlString(ViewLink(viewKey, title, cssClass, fragment));
+            return new MvcHtmlString(ViewLink(viewKey, title, cssClass, fragment, onClick));
         }
 
         public static string ViewUrl(this HtmlHelper htmlHelper, string viewKey, string fragment = null)

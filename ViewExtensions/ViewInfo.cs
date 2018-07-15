@@ -69,7 +69,7 @@ namespace ViewExtensions
             Order = int.Parse(orderString);
         }
 
-        public string ViewLink(string title = null, string cssClass = null, string fragment = null)
+        public string ViewLink(string title = null, string cssClass = null, string fragment = null, string onClick = null)
         {
             string finalCssClass = cssClass;
 
@@ -79,7 +79,7 @@ namespace ViewExtensions
                 finalUrl += "#" + fragment;
             }
 
-            return HtmlHelpers.LinkHtml(finalUrl, title ?? Title, finalCssClass);
+            return HtmlHelpers.LinkHtml(finalUrl, title ?? Title, finalCssClass, onClick);
         }
 
         public string ViewUrl(string fragment = null)

@@ -91,8 +91,11 @@ namespace ViewExtensions
         /// <param name="fragment">
         /// If not null, this is added to the url after a #.
         /// </param>
+        /// <param name="onClick">
+        /// If not null, an onclick handler is added to the link with this content.
+        /// </param>
         /// <returns></returns>
-        string ViewLink(string title = null, string cssClass = null, string fragment = null);
+        string ViewLink(string title = null, string cssClass = null, string fragment = null, string onClick = null);
 
         /// <summary>
         /// Returns the url of the view.
